@@ -3,11 +3,9 @@ package com.hw.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -22,9 +20,8 @@ import java.util.UUID;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {TransactionSystemException.class,
+    @ExceptionHandler(value = {
             IllegalArgumentException.class,
-            DataIntegrityViolationException.class,
     })
     protected ResponseEntity<?> handleException(RuntimeException ex, WebRequest request) {
 
