@@ -46,9 +46,6 @@ public class EmailController {
             MimeMessageHelper helper = new MimeMessageHelper(message);
 
             Map<String, Object> model = new HashMap();
-            // set loading location to src/main/resources
-            // You may want to use a subfolder such as /templates here
-            freemarkerConfig.setClassForTemplateLoading(this.getClass(), "/templates");
 
             Template t = null;
             try {
