@@ -1,4 +1,4 @@
-package com.hw.utility;
+package com.hw.shared;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,15 +15,15 @@ import java.io.IOException;
 
 @Component
 public class ResourceServiceTokenHelper {
-    @Value("${security.oauth2.client.accessTokenUri}")
+    @Value("${security.oauth2.client.accessTokenUri:#{null}}")
     private String tokenUrl;
 
-    @Value("${security.oauth2.client.clientId}")
+    @Value("${security.oauth2.client.clientId:#{null}}")
     private String clientId;
-    @Value("${security.oauth2.client.clientSecret}")
+    @Value("${security.oauth2.client.clientSecret:#{null}}")
     private String clientSecret;
 
-    @Autowired
+    @Autowired(required = false)
     private RestTemplate restTemplate;
 
     public String storedJwtToken = null;

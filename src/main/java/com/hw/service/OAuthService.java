@@ -1,7 +1,7 @@
 package com.hw.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.utility.ResourceServiceTokenHelper;
+import com.hw.shared.ResourceServiceTokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
