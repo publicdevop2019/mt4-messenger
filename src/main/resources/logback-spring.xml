@@ -2,7 +2,7 @@
 <configuration>
 
     <property name="location" value="./logs"/>
-    <property name="name" value="messenger"/>
+    <property name="name" value="Messenger"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
