@@ -36,7 +36,7 @@ public class EmailController {
     private OAuthService oAuthService;
 
     @PostMapping("notifyBy/email/newOrder")
-    public ResponseEntity<?> sendOrderInfoToAccountViaEmail(@RequestBody Map<String, String> contentMap) {
+    public ResponseEntity<?> sendOrderInfoToAccountViaEmail() {
         String adminList = oAuthService.getAdminList();
         String[] split = adminList.split(",");
         for (String email : split) {
