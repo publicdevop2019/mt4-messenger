@@ -58,9 +58,10 @@ public class ShopAdminNotificationService extends CommonDeliverTaskService {
     }
 
     @Override
-    @Scheduled(fixedRate = 10 * 1000L)
+    @Scheduled(fixedRate = 360 * 1000L)
     public void deliver() {
         List<DeliverTask> deliverTasks = scanPendingDeliverTask(debounceTime, type);
+        log.info("scheduled deliver found {} deliver task to execute", deliverTasks.size());
         deliverTasks.forEach(deliverTask -> {
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message);
@@ -75,9 +76,9 @@ public class ShopAdminNotificationService extends CommonDeliverTaskService {
                 log.info("start of sending gmail to subscriber");
                 sender.send(message);
                 log.info("sending gmail to subscriber success");
-                deliverTask.onMsgDeliverSuccess();
+                deliverTask.onMsgDeliverSuccess(deliverTaskRepo);
             } catch (IOException | TemplateException | MessagingException e) {
-                deliverTask.onMsgDeliverFailure(debounceTime, e.getCause().toString());
+                deliverTask.onMsgDeliverFailure(debounceTime, e.getCause().toString(), deliverTaskRepo);
                 log.error("error when trying to send email::", e);
                 throw new GmailExpcetion("error when trying to send email");
             }

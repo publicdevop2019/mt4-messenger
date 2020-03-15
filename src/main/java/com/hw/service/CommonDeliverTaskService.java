@@ -30,7 +30,7 @@ public class CommonDeliverTaskService implements DeliverTaskService {
         Stream<DeliverTask> optionalStream1 = optionalStream.filter(Optional::isPresent).map(Optional::get).peek(earliestDeliverTask -> {
             List<DeliverTask> collect = streamSupplier.get().filter(e -> e.isReady(debounceTime, earliestDeliverTask) && e.getDeliverTo().equals(earliestDeliverTask.getDeliverTo())).collect(Collectors.toList());
             // merge multiple deliver task to one
-            earliestDeliverTask.merge(collect);
+            earliestDeliverTask.merge(collect, deliverTaskRepo);
         });
         return optionalStream1.collect(Collectors.toList());
     }

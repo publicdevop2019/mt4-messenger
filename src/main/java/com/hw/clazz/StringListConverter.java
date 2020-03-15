@@ -6,22 +6,22 @@ import org.springframework.util.StringUtils;
 import javax.persistence.AttributeConverter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class StringListConverter implements AttributeConverter<Set<String>, String> {
+public class StringListConverter implements AttributeConverter<List<String>, String> {
 
     @Override
-    public String convertToDatabaseColumn(Set<String> strings) {
+    public String convertToDatabaseColumn(List<String> strings) {
         if (ObjectUtils.isEmpty(strings))
             return null;
         return String.join(",", strings);
     }
 
     @Override
-    public Set<String> convertToEntityAttribute(String s) {
+    public List<String> convertToEntityAttribute(String s) {
         if (StringUtils.hasText(s))
-            return Arrays.stream(s.split(",")).collect(Collectors.toSet());
-        return Collections.emptySet();
+            return Arrays.stream(s.split(",")).collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }

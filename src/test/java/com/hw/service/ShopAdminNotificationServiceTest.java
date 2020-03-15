@@ -75,16 +75,13 @@ public class ShopAdminNotificationServiceTest {
         DeliverTask deliverTask = DeliverTask.create("a", "type");
         deliverTask.setCreatedAt(Date.from(Instant.now()));
         deliverTask.setId(1L);
-        deliverTask.setDeliverTaskRepo(deliverTaskRepo);
         DeliverTask deliverTask1 = DeliverTask.create("b", "type");
         deliverTask1.setCreatedAt(Date.from(Instant.now().plusMillis(1000)));
         deliverTask1.setId(2L);
-        deliverTask1.setDeliverTaskRepo(deliverTaskRepo);
 
         DeliverTask deliverTask2 = DeliverTask.create("c", "type");
         deliverTask2.setCreatedAt(Date.from(Instant.now().plusMillis(2000)));
         deliverTask2.setId(3L);
-        deliverTask2.setDeliverTaskRepo(deliverTaskRepo);
 
         Mockito.doReturn(Arrays.asList(deliverTask, deliverTask1, deliverTask2)).when(deliverTaskRepo).findAll();
 
@@ -98,16 +95,13 @@ public class ShopAdminNotificationServiceTest {
         DeliverTask deliverTask = DeliverTask.create("a", "type");
         deliverTask.setCreatedAt(Date.from(Instant.now()));
         deliverTask.setId(1L);
-        deliverTask.setDeliverTaskRepo(deliverTaskRepo);
         DeliverTask deliverTask1 = DeliverTask.create("a", "type");
         deliverTask1.setCreatedAt(Date.from(Instant.now().plusMillis(1000)));
         deliverTask1.setId(2L);
-        deliverTask1.setDeliverTaskRepo(deliverTaskRepo);
 
         DeliverTask deliverTask2 = DeliverTask.create("a", "type");
         deliverTask2.setCreatedAt(Date.from(Instant.now().plusMillis(2000)));
         deliverTask2.setId(3L);
-        deliverTask2.setDeliverTaskRepo(deliverTaskRepo);
 
         Mockito.doReturn(Arrays.asList(deliverTask, deliverTask1, deliverTask2)).when(deliverTaskRepo).findAll();
 

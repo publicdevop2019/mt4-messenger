@@ -5,7 +5,6 @@ import com.hw.clazz.StringListConverter;
 import com.hw.repo.DeliverTaskRepo;
 import com.hw.shared.Auditable;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -62,10 +61,6 @@ public class DeliverTask extends Auditable {
     @Convert(converter = StringListConverter.class)
     private List<String> errorMsg;
 
-    @Autowired
-    @Transient
-    DeliverTaskRepo deliverTaskRepo;
-
     public static DeliverTask create(String deliverTo, String type) {
         DeliverTask deliverTask = new DeliverTask();
         deliverTask.setDeliverTo(deliverTo);
@@ -73,7 +68,7 @@ public class DeliverTask extends Auditable {
         return deliverTask;
     }
 
-    public void merge(List<DeliverTask> deliverTasks) {
+    public void merge(List<DeliverTask> deliverTasks, DeliverTaskRepo deliverTaskRepo) {
         mergeCount = deliverTasks.size();
         mergeFrom = deliverTasks.stream().map(e -> e.getId().toString()).collect(Collectors.toList());
         deliverTasks.forEach(e -> {
@@ -97,7 +92,7 @@ public class DeliverTask extends Auditable {
         return !deliverStatus && !merged;
     }
 
-    public void onMsgDeliverFailure(Long debounceTime, String errorMsg) {
+    public void onMsgDeliverFailure(Long debounceTime, String errorMsg, DeliverTaskRepo deliverTaskRepo) {
         setCreatedAt(Date.from(getCreatedAt().toInstant().plusMillis(debounceTime)));
         deliverStatus = Boolean.FALSE;
         carryOver = Boolean.TRUE;
@@ -108,7 +103,7 @@ public class DeliverTask extends Auditable {
         deliverTaskRepo.save(this);
     }
 
-    public void onMsgDeliverSuccess() {
+    public void onMsgDeliverSuccess(DeliverTaskRepo deliverTaskRepo) {
         deliverStatus = Boolean.TRUE;
         deliverTaskRepo.save(this);
     }
