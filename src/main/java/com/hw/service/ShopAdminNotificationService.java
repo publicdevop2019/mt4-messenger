@@ -58,7 +58,7 @@ public class ShopAdminNotificationService extends CommonDeliverTaskService {
     }
 
     @Override
-    @Scheduled(fixedRate = 360 * 1000L)
+    @Scheduled(fixedRateString = "${fixedRate.in.milliseconds}")
     public void deliver() {
         List<DeliverTask> deliverTasks = scanPendingDeliverTask(debounceTime, type);
         log.info("scheduled deliver found {} deliver task to execute", deliverTasks.size());
