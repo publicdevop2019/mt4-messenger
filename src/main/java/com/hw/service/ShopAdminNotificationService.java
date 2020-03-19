@@ -26,7 +26,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-public class ShopAdminNotificationService extends CommonDeliverTaskService {
+public class ShopAdminNotificationService extends MergeSimilarDeliverService {
 
     @PostConstruct
     private void initParam() {
@@ -44,7 +44,7 @@ public class ShopAdminNotificationService extends CommonDeliverTaskService {
     private OAuthService oAuthService;
 
     @Override
-    public void saveDeliverRequest() {
+    public void saveDeliverRequest(Map<String, String> map) {
         String adminList = oAuthService.getAdminList();
         if (adminList != null && !adminList.equals("")) {
             String[] split = adminList.split(",");
@@ -58,7 +58,7 @@ public class ShopAdminNotificationService extends CommonDeliverTaskService {
     }
 
     @Override
-    @Scheduled(fixedRateString = "${fixedRate.in.milliseconds}")
+    @Scheduled(fixedRateString = "${fixedRate.in.milliseconds.shop}")
     public void deliver() {
         List<DeliverTask> deliverTasks = scanPendingDeliverTask(debounceTime, type);
         log.info("scheduled deliver found {} deliver task to execute", deliverTasks.size());

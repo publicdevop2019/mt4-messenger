@@ -67,6 +67,13 @@ public class DeliverTask extends Auditable {
         deliverTask.setType(type);
         return deliverTask;
     }
+    public static DeliverTask create(String deliverTo, String type,Map<String,String> params) {
+        DeliverTask deliverTask = new DeliverTask();
+        deliverTask.setDeliverTo(deliverTo);
+        deliverTask.setType(type);
+        deliverTask.setTemplateParams(params);
+        return deliverTask;
+    }
 
     public void merge(List<DeliverTask> deliverTasks, DeliverTaskRepo deliverTaskRepo) {
         mergeCount = deliverTasks.size();

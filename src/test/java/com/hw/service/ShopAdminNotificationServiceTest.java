@@ -38,28 +38,28 @@ public class ShopAdminNotificationServiceTest {
     @Test
     public void saveDeliverRequest_one_admin() {
         Mockito.doReturn("a@gmail").when(oAuthService).getAdminList();
-        shopAdminNotificationService.saveDeliverRequest();
+        shopAdminNotificationService.saveDeliverRequest(null);
         Mockito.verify(deliverTaskRepo, Mockito.times(1)).save(any(DeliverTask.class));
     }
 
     @Test
     public void saveDeliverRequest_multi_admin() {
         Mockito.doReturn("a@gmail,b@gmail,c@gmail").when(oAuthService).getAdminList();
-        shopAdminNotificationService.saveDeliverRequest();
+        shopAdminNotificationService.saveDeliverRequest(null);
         Mockito.verify(deliverTaskRepo, Mockito.times(3)).save(any(DeliverTask.class));
     }
 
     @Test
     public void saveDeliverRequest_no_admin() {
         Mockito.doReturn("").when(oAuthService).getAdminList();
-        shopAdminNotificationService.saveDeliverRequest();
+        shopAdminNotificationService.saveDeliverRequest(null);
         Mockito.verify(deliverTaskRepo, Mockito.times(0)).save(any(DeliverTask.class));
     }
 
     @Test
     public void saveDeliverRequest_no_admin_null() {
         Mockito.doReturn(null).when(oAuthService).getAdminList();
-        shopAdminNotificationService.saveDeliverRequest();
+        shopAdminNotificationService.saveDeliverRequest(null);
         Mockito.verify(deliverTaskRepo, Mockito.times(0)).save(any(DeliverTask.class));
     }
 

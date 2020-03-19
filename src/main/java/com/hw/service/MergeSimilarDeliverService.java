@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommonDeliverTaskService implements DeliverTaskService {
+public class MergeSimilarDeliverService implements SaveThenScheduleDeliverService {
     @Autowired
     DeliverTaskRepo deliverTaskRepo;
 
@@ -45,7 +46,8 @@ public class CommonDeliverTaskService implements DeliverTaskService {
     }
 
     @Override
-    public void saveDeliverRequest() {
+    public void saveDeliverRequest(Map<String, String> map) {
 
     }
+
 }
