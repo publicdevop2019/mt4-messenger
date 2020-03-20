@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Order Has Been Placed</title>
+    <title>Your Activation Code</title>
 </head>
 <body>
 <div style="padding-left:20px">Your Activation code is: <b>${activationCode}</b></div>
