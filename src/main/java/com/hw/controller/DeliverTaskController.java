@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "v1/api", produces = "application/json")
+@RequestMapping( produces = "application/json")
 @Slf4j
 public class DeliverTaskController {
 
