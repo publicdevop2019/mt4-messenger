@@ -1,6 +1,7 @@
 package com.hw.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hw.shared.EurekaRegistryHelper;
 import com.hw.shared.ResourceServiceTokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,9 @@ public class OAuthService {
     @Value("${url.oauth}")
     private String url;
 
+    @Autowired
+    EurekaRegistryHelper eurekaRegistryHelper;
+
     /**
      * @return
      * @note admin account will receive notification
@@ -31,6 +35,6 @@ public class OAuthService {
     public String getAdminList() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> hashMapHttpEntity = new HttpEntity<>(headers);
-        return tokenHelper.exchange(url, HttpMethod.GET, hashMapHttpEntity, String.class).getBody();
+        return tokenHelper.exchange(eurekaRegistryHelper.getProxyHomePageUrl() + url, HttpMethod.GET, hashMapHttpEntity, String.class).getBody();
     }
 }
