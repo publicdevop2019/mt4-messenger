@@ -44,7 +44,7 @@ public class DeliverTask extends Auditable {
     @Column
     private Boolean merged = Boolean.FALSE;
 
-    @Column
+    @Column(length = 10000)
     @Convert(converter = StringListConverter.class)
     private List<String> mergeFrom;
 
