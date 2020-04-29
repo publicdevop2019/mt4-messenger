@@ -48,113 +48,87 @@ public class MessageApplicationService {
     @Autowired
     private EntityManager entityManager;
 
+    @Transactional
     public void sendPwdResetEmail(Map<String, String> map) {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message);
+        log.info("start of send email for pwd reset");
         Map<String, Object> model = new HashMap<>();
         model.put("token", map.get("token"));
-        Template t;
-        try {
-            t = freemarkerConfig.getTemplate("PasswordResetTemplate.ftl");
-            String text = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
-            mimeMessageHelper.setTo(map.get("email"));
-            mimeMessageHelper.setText(text, true);
-            mimeMessageHelper.setSubject("Your password reset token");
-            sender.send(message);
-        } catch (IOException | TemplateException | MessagingException e) {
-            throw new GmailDeliverException();
-        }
-
+        sendEmail(map.get("email"), "PasswordResetTemplate.ftl", "Your password reset token", model);
     }
 
+    @Transactional
     public void sendActivationCodeEmail(Map<String, String> map) {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message);
+        log.info("start of send email for activation code");
         Map<String, Object> model = new HashMap<>();
         model.put("activationCode", map.get("activationCode"));
-        Template t;
-        try {
-            t = freemarkerConfig.getTemplate("ActivationCodeTemplate.ftl");
-            String text = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
-            mimeMessageHelper.setTo(map.get("email"));
-            mimeMessageHelper.setText(text, true);
-            mimeMessageHelper.setSubject("Your activation code");
-            sender.send(message);
-        } catch (IOException | TemplateException | MessagingException e) {
-            throw new GmailDeliverException();
-        }
+        sendEmail(map.get("email"), "ActivationCodeTemplate.ftl", "Your activation code", model);
     }
 
-    /**
-     * 1.
-     */
     @Transactional
     public void sendNewOrderEmail() {
         log.info("start of send email for new order");
         String adminEmail = oAuthService.getAdminList();
-        Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(adminEmail, BizTypeEnum.NEW_ORDER);
+        sendEmail(adminEmail, "NewOrderEmailTemplate.ftl", "New Order(s) Has Been Placed", new HashMap<>());
+    }
+
+    private void sendEmail(String email, String templateUrl, String subject, Map<String, Object> model) {
+        Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, BizTypeEnum.NEW_ORDER);
         if (byDeliverTo.isPresent()) {
-            log.info("message was sent for {} before", adminEmail);
-            Boolean aBoolean = byDeliverTo.get().hasCoolDown();
-            if (!aBoolean)
-                throw new CoolDownException();
-            log.info("message has cool down");
-            Message message = byDeliverTo.get();
-            deliverEmail(adminEmail);
-            message.onMsgSendSuccess();
-            log.info("updating message status after email deliver");
-            messageRepository.saveAndFlush(message);
+            continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
+            messageRepository.saveAndFlush(byDeliverTo.get());
         } else {
-            log.info("new message for {}", adminEmail);
-            Message message = Message.create(adminEmail, BizTypeEnum.NEW_ORDER);
+            log.info("new message for {}", email);
+            Message message = Message.create(email, BizTypeEnum.NEW_ORDER);
             log.info("save to db first for concurrency scenario");
             messageRepository.saveAndFlush(message);
-            continueDeliver(adminEmail);
+            continueDeliver(email, templateUrl, subject, model);
         }
-
     }
 
     /**
      * manually create new transaction as this is call internally
      *
-     * @param adminEmail
+     * @param email
      */
-    private void continueDeliver(String adminEmail) {
+    private void continueDeliver(String email, String templateUrl, String subject, Map<String, Object> model) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(adminEmail, BizTypeEnum.NEW_ORDER);
+                Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, BizTypeEnum.NEW_ORDER);
                 if (byDeliverTo.isPresent()) {
-                    log.info("message was sent for {} before", adminEmail);
-                    Boolean aBoolean = byDeliverTo.get().hasCoolDown();
-                    if (!aBoolean)
-                        throw new CoolDownException();
-                    log.info("message has cool down");
-                    Message message = byDeliverTo.get();
-                    deliverEmail(adminEmail);
-                    log.info("updating message status after email deliver");
-                    message.onMsgSendSuccess();
+                    continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
                     entityManager.persist(byDeliverTo.get());
                 }
             }
         });
     }
 
-    private void deliverEmail(String to) {
+    private void deliverEmail(String to, String templateUrl, String subject, Map<String, Object> model) {
+        log.info("deliver email");
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-        Map<String, Object> model = new HashMap<>();
         Template t;
         try {
-            t = freemarkerConfig.getTemplate("NewOrderEmailTemplate.ftl");
+            t = freemarkerConfig.getTemplate(templateUrl);
             String text = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setText(text, true); // set to html
-            mimeMessageHelper.setSubject("New Order(s) Has Been Placed");
+            mimeMessageHelper.setSubject(subject);
             sender.send(mimeMessage);
         } catch (IOException | TemplateException | MessagingException e) {
             throw new GmailDeliverException();
         }
+    }
+
+    private void continueDeliverShared(String email, Message message, String templateUrl, String subject, Map model) {
+        log.info("message was sent for {} before", email);
+        Boolean aBoolean = message.hasCoolDown();
+        if (!aBoolean)
+            throw new CoolDownException();
+        log.info("message has cool down");
+        deliverEmail(email, templateUrl, subject, model);
+        log.info("updating message status after email deliver");
+        message.onMsgSendSuccess();
     }
 }
