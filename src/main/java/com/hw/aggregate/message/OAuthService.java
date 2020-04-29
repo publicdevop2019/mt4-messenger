@@ -1,8 +1,10 @@
-package com.hw.service;
+package com.hw.aggregate.message;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hw.aggregate.message.exception.NoAdminFoundException;
 import com.hw.shared.EurekaRegistryHelper;
 import com.hw.shared.ResourceServiceTokenHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class OAuthService {
     @Autowired
     RestTemplate restTemplate;
@@ -35,6 +38,12 @@ public class OAuthService {
     public String getAdminList() {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> hashMapHttpEntity = new HttpEntity<>(headers);
-        return tokenHelper.exchange(eurekaRegistryHelper.getProxyHomePageUrl() + url, HttpMethod.GET, hashMapHttpEntity, String.class).getBody();
+        String body = tokenHelper.exchange(eurekaRegistryHelper.getProxyHomePageUrl() + url, HttpMethod.GET, hashMapHttpEntity, String.class).getBody();
+        if (body != null && !body.equals("")) {
+            String[] split = body.split(",");
+            return split[0];
+        } else {
+            throw new NoAdminFoundException();
+        }
     }
 }
