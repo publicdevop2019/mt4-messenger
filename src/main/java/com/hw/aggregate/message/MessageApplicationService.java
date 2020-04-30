@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -29,6 +30,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class MessageApplicationService {
     @Autowired
     private MessageRepository messageRepository;
@@ -48,40 +50,57 @@ public class MessageApplicationService {
     @Autowired
     private EntityManager entityManager;
 
-    @Transactional
+
     public void sendPwdResetEmail(Map<String, String> map) {
         log.info("start of send email for pwd reset");
         Map<String, Object> model = new HashMap<>();
         model.put("token", map.get("token"));
-        sendEmail(map.get("email"), "PasswordResetTemplate.ftl", "Your password reset token", model);
+        sendEmail(map.get("email"), "PasswordResetTemplate.ftl", "Your password reset token", model, BizTypeEnum.PWD_RESET);
     }
 
-    @Transactional
     public void sendActivationCodeEmail(Map<String, String> map) {
         log.info("start of send email for activation code");
         Map<String, Object> model = new HashMap<>();
         model.put("activationCode", map.get("activationCode"));
-        sendEmail(map.get("email"), "ActivationCodeTemplate.ftl", "Your activation code", model);
+        sendEmail(map.get("email"), "ActivationCodeTemplate.ftl", "Your activation code", model, BizTypeEnum.NEW_USER_CODE);
     }
 
-    @Transactional
     public void sendNewOrderEmail() {
         log.info("start of send email for new order");
         String adminEmail = oAuthService.getAdminList();
-        sendEmail(adminEmail, "NewOrderEmailTemplate.ftl", "New Order(s) Has Been Placed", new HashMap<>());
+        sendEmail(adminEmail, "NewOrderEmailTemplate.ftl", "New Order(s) Has Been Placed", new HashMap<>(), BizTypeEnum.NEW_ORDER);
     }
 
-    private void sendEmail(String email, String templateUrl, String subject, Map<String, Object> model) {
-        Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, BizTypeEnum.NEW_ORDER);
-        if (byDeliverTo.isPresent()) {
-            continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
-            messageRepository.saveAndFlush(byDeliverTo.get());
+    private void sendEmail(String email, String templateUrl, String subject, Map<String, Object> model, BizTypeEnum bizType) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        Optional<Message> message = transactionTemplate.execute(status -> {
+            Optional<Message> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
+            return byDeliverToAndBizType;
+        });
+        if (message.isPresent()) {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    Optional<Message> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
+                    continueDeliverShared(email, byDeliverToAndBizType.get(), templateUrl, subject, model);
+                    entityManager.persist(message.get());
+                    entityManager.flush();
+                }
+            });
         } else {
             log.info("new message for {}", email);
-            Message message = Message.create(email, BizTypeEnum.NEW_ORDER);
-            log.info("save to db first for concurrency scenario");
-            messageRepository.saveAndFlush(message);
-            continueDeliver(email, templateUrl, subject, model);
+            // below run in a separate transaction
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    Message message = Message.create(email, bizType);
+                    log.info("save to db first for concurrency scenario");
+                    entityManager.persist(message);
+                    entityManager.flush();
+                }
+            });
+            // below run in a new transaction
+            continueDeliver(email, templateUrl, subject, model, bizType);
         }
     }
 
@@ -90,21 +109,28 @@ public class MessageApplicationService {
      *
      * @param email
      */
-    private void continueDeliver(String email, String templateUrl, String subject, Map<String, Object> model) {
+    private void continueDeliver(String email, String templateUrl, String subject, Map<String, Object> model, BizTypeEnum bizTypeEnum) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        int isolationLevel = transactionTemplate.getIsolationLevel();
+        log.info("isolation level " + isolationLevel);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, BizTypeEnum.NEW_ORDER);
+                log.info("after db save, read from db again");
+                Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, bizTypeEnum);
                 if (byDeliverTo.isPresent()) {
+                    log.info("found previously saved entity");
                     continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
                     entityManager.persist(byDeliverTo.get());
+                    entityManager.flush();
+                } else {
+                    log.error("read nothing from db");
                 }
             }
         });
     }
 
-    private void deliverEmail(String to, String templateUrl, String subject, Map<String, Object> model) {
+    private void deliverEmail(String to, String templateUrl, String subject, Map<String, Object> model) throws GmailDeliverException {
         log.info("deliver email");
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -117,6 +143,7 @@ public class MessageApplicationService {
             mimeMessageHelper.setSubject(subject);
             sender.send(mimeMessage);
         } catch (IOException | TemplateException | MessagingException e) {
+            log.error("something wrong happen during email send", e);
             throw new GmailDeliverException();
         }
     }
