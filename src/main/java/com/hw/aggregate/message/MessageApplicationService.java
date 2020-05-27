@@ -4,6 +4,7 @@ import com.hw.aggregate.message.exception.CoolDownException;
 import com.hw.aggregate.message.exception.GmailDeliverException;
 import com.hw.aggregate.message.model.BizTypeEnum;
 import com.hw.aggregate.message.model.Message;
+import com.hw.shared.IdGenerator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -50,6 +51,9 @@ public class MessageApplicationService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private IdGenerator idGenerator;
+
 
     public void sendPwdResetEmail(Map<String, String> map) {
         log.info("start of send email for pwd reset");
@@ -93,7 +97,7 @@ public class MessageApplicationService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    Message message = Message.create(email, bizType);
+                    Message message = Message.create(idGenerator.getId(), email, bizType);
                     log.info("save to db first for concurrency scenario");
                     entityManager.persist(message);
                     entityManager.flush();

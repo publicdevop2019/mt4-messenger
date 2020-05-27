@@ -11,11 +11,8 @@ import java.util.Date;
 @Entity
 @Data
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"deliverTo", "bizType"}))
-@SequenceGenerator(name = "messageId_gen", sequenceName = "messageId_gen", initialValue = 100)
 public class Message extends Auditable {
     @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "messageId_gen")
     private Long id;
 
     @Column
@@ -36,11 +33,12 @@ public class Message extends Auditable {
     public Message() {
     }
 
-    public static Message create(String deliverTo, BizTypeEnum bizType) {
-        return new Message(deliverTo, bizType);
+    public static Message create(Long id, String deliverTo, BizTypeEnum bizType) {
+        return new Message(id, deliverTo, bizType);
     }
 
-    public Message(String deliverTo, BizTypeEnum bizType) {
+    public Message(Long id, String deliverTo, BizTypeEnum bizType) {
+        this.id = id;
         this.deliverTo = deliverTo;
         this.bizType = bizType;
         this.lastTimeResult = false;
