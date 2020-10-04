@@ -1,4 +1,4 @@
-package com.hw.clazz;
+package com.hw.config;
 
 import com.hw.aggregate.message.exception.CoolDownException;
 import com.hw.aggregate.message.exception.GmailDeliverException;
@@ -32,7 +32,7 @@ public class DomainExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handle400Exception(RuntimeException ex, WebRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(ex);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Error-Id", errorMessage.errorId);
+        httpHeaders.set("Error-Id", errorMessage.getErrorId());
         return handleExceptionInternal(ex, errorMessage, httpHeaders, HttpStatus.BAD_REQUEST, request);
     }
 
@@ -42,7 +42,7 @@ public class DomainExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handle500Exception(RuntimeException ex, WebRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(ex);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Error-Id", errorMessage.errorId);
+        httpHeaders.set("Error-Id", errorMessage.getErrorId());
         return handleExceptionInternal(ex, errorMessage, httpHeaders, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 }
