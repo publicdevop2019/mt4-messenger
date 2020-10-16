@@ -147,8 +147,7 @@ public class MessageApplicationService {
             mimeMessageHelper.setSubject(subject);
             sender.send(mimeMessage);
         } catch (IOException | TemplateException | MessagingException e) {
-            log.error("something wrong happen during email send", e);
-            throw new GmailDeliverException();
+            throw new GmailDeliverException(e);
         }
     }
 
