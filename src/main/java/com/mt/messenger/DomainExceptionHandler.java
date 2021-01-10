@@ -1,10 +1,10 @@
-package com.hw.config;
+package com.mt.messenger;
 
-import com.hw.aggregate.message.exception.CoolDownException;
-import com.hw.aggregate.message.exception.GmailDeliverException;
-import com.hw.aggregate.message.exception.NoAdminFoundException;
-import com.hw.aggregate.message.exception.UnknownBizTypeException;
-import com.hw.shared.ErrorMessage;
+import com.mt.messenger.exception.CoolDownException;
+import com.mt.messenger.exception.GmailDeliverException;
+import com.mt.messenger.exception.NoAdminFoundException;
+import com.mt.messenger.exception.UnknownBizTypeException;
+import com.mt.common.logging.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

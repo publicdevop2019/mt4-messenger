@@ -1,4 +1,4 @@
-package com.hw.aggregate.message.model;
+package com.mt.messenger.model;
 
 public enum BizTypeEnum {
     NEW_ORDER,

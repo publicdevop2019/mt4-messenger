@@ -1,10 +1,13 @@
-package com.hw.aggregate.message;
+package com.mt.messenger;
 
-import com.hw.aggregate.message.exception.CoolDownException;
-import com.hw.aggregate.message.exception.GmailDeliverException;
-import com.hw.aggregate.message.model.BizTypeEnum;
-import com.hw.aggregate.message.model.Message;
-import com.hw.shared.IdGenerator;
+import com.mt.common.domain.model.CommonDomainRegistry;
+import com.mt.common.domain_event.StoredEvent;
+import com.mt.messenger.exception.CoolDownException;
+import com.mt.messenger.exception.GmailDeliverException;
+import com.mt.messenger.model.BizTypeEnum;
+import com.mt.messenger.model.Message;
+import com.mt.messenger.model.PendingUserActivationCodeUpdated;
+import com.mt.messenger.model.UserPwdResetCodeUpdated;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -25,9 +28,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -50,9 +51,6 @@ public class MessageApplicationService {
 
     @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    private IdGenerator idGenerator;
 
 
     public void sendPwdResetEmail(Map<String, String> map) {
@@ -97,7 +95,7 @@ public class MessageApplicationService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    Message message = Message.create(idGenerator.getId(), email, bizType);
+                    Message message = Message.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
                     log.info("save to db first for concurrency scenario");
                     entityManager.persist(message);
                     entityManager.flush();
@@ -160,5 +158,36 @@ public class MessageApplicationService {
         deliverEmail(email, templateUrl, subject, model);
         log.info("updating message status after email deliver");
         message.onMsgSendSuccess();
+    }
+
+    private static final Set<String> EVENTS = new HashSet<>();
+
+    static {
+        EVENTS.add(PendingUserActivationCodeUpdated.class.getName());
+        EVENTS.add(UserPwdResetCodeUpdated.class.getName());
+    }
+
+    public void sendEmail(StoredEvent o) {
+
+        if (getShortName(PendingUserActivationCodeUpdated.class.getName()).equals(getShortName(o.getName()))) {
+            PendingUserActivationCodeUpdated o1 = CommonDomainRegistry.customObjectSerializer().deserialize(o.getEventBody(), PendingUserActivationCodeUpdated.class);
+            HashMap<String, String> stringStringHashMap = new HashMap<>();
+            stringStringHashMap.put("email", o1.getEmail());
+            stringStringHashMap.put("activationCode", o1.getCode());
+            sendActivationCodeEmail(stringStringHashMap);
+            log.debug("deliver activation code email successfully");
+        } else if (getShortName(UserPwdResetCodeUpdated.class.getName()).equals(getShortName(o.getName()))) {
+            UserPwdResetCodeUpdated o1 = CommonDomainRegistry.customObjectSerializer().deserialize(o.getEventBody(), UserPwdResetCodeUpdated.class);
+            HashMap<String, String> stringStringHashMap = new HashMap<>();
+            stringStringHashMap.put("email", o1.getEmail());
+            stringStringHashMap.put("token", o1.getCode());
+            sendActivationCodeEmail(stringStringHashMap);
+            log.debug("deliver password reset code email successfully");
+        }
+    }
+
+    private String getShortName(String name) {
+        String[] split = name.split("\\.");
+        return split[split.length - 1];
     }
 }

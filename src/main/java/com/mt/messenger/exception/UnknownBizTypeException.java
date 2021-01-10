@@ -1,4 +1,4 @@
-package com.hw.aggregate.message.exception;
+package com.mt.messenger.exception;
 
 public class UnknownBizTypeException extends RuntimeException{
 }

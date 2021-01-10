@@ -1,4 +1,4 @@
-package com.hw.aggregate.message;
+package com.mt.messenger;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

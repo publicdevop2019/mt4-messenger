@@ -1,7 +1,7 @@
-package com.hw.aggregate.message.model;
+package com.mt.messenger.model;
 
-import com.hw.aggregate.message.exception.UnknownBizTypeException;
-import com.hw.shared.Auditable;
+import com.mt.messenger.exception.UnknownBizTypeException;
+import com.mt.common.audit.Auditable;
 import lombok.Data;
 
 import javax.persistence.*;

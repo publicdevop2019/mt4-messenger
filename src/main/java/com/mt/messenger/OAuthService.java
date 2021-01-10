@@ -1,9 +1,9 @@
-package com.hw.aggregate.message;
+package com.mt.messenger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.message.exception.NoAdminFoundException;
-import com.hw.shared.EurekaRegistryHelper;
-import com.hw.shared.ResourceServiceTokenHelper;
+import com.mt.messenger.exception.NoAdminFoundException;
+import com.mt.common.jwt.ResourceServiceTokenHelper;
+import com.mt.common.service_discovery.EurekaRegistryHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
