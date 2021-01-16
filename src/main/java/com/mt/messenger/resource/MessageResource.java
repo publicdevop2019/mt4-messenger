@@ -1,19 +1,17 @@
-package com.mt.messenger;
+package com.mt.messenger.resource;
 
+import com.mt.messenger.application.MessageApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
+@Slf4j
 @RestController
 @RequestMapping(produces = "application/json")
-@Slf4j
-public class MessageController {
+public class MessageResource {
 
     @Autowired
     private MessageApplicationService messageApplicationService;
@@ -21,18 +19,6 @@ public class MessageController {
     @PostMapping("notifyBy/email/newOrder")
     public ResponseEntity<?> sendOrderInfoToAccount() {
         messageApplicationService.sendNewOrderEmail();
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("notifyBy/email/activationCode")
-    public ResponseEntity<?> sendActivationToUser(@RequestBody Map<String, String> map) {
-        messageApplicationService.sendActivationCodeEmail(map);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("notifyBy/email/pwdReset")
-    public ResponseEntity<?> sendPasswordResetToUser(@RequestBody Map<String, String> map) {
-        messageApplicationService.sendPwdResetEmail(map);
         return ResponseEntity.ok().build();
     }
 }

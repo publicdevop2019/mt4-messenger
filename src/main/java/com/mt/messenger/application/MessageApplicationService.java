@@ -1,13 +1,8 @@
-package com.mt.messenger;
+package com.mt.messenger.application;
 
 import com.mt.common.domain.model.CommonDomainRegistry;
 import com.mt.common.domain_event.StoredEvent;
-import com.mt.messenger.exception.CoolDownException;
-import com.mt.messenger.exception.GmailDeliverException;
-import com.mt.messenger.model.BizTypeEnum;
-import com.mt.messenger.model.Message;
-import com.mt.messenger.model.PendingUserActivationCodeUpdated;
-import com.mt.messenger.model.UserPwdResetCodeUpdated;
+import com.mt.messenger.model.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -74,12 +69,11 @@ public class MessageApplicationService {
     }
 
     private void sendEmail(String email, String templateUrl, String subject, Map<String, Object> model, BizTypeEnum bizType) {
+        if (email == null)
+            throw new IllegalArgumentException("email should not be empty");
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        Optional<Message> message = transactionTemplate.execute(status -> {
-            Optional<Message> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
-            return byDeliverToAndBizType;
-        });
-        if (message.isPresent()) {
+        Optional<Message> message = transactionTemplate.execute(status -> messageRepository.findByDeliverToAndBizType(email, bizType));
+        if (message != null && message.isPresent()) {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -167,7 +161,7 @@ public class MessageApplicationService {
         EVENTS.add(UserPwdResetCodeUpdated.class.getName());
     }
 
-    public void sendEmail(StoredEvent o) {
+    public void handleEvent(StoredEvent o) {
 
         if (getShortName(PendingUserActivationCodeUpdated.class.getName()).equals(getShortName(o.getName()))) {
             PendingUserActivationCodeUpdated o1 = CommonDomainRegistry.customObjectSerializer().deserialize(o.getEventBody(), PendingUserActivationCodeUpdated.class);
@@ -181,7 +175,7 @@ public class MessageApplicationService {
             HashMap<String, String> stringStringHashMap = new HashMap<>();
             stringStringHashMap.put("email", o1.getEmail());
             stringStringHashMap.put("token", o1.getCode());
-            sendActivationCodeEmail(stringStringHashMap);
+            sendPwdResetEmail(stringStringHashMap);
             log.debug("deliver password reset code email successfully");
         }
     }

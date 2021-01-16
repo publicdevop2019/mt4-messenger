@@ -1,6 +1,6 @@
 package com.mt.messenger.model;
 
-import com.mt.messenger.MessageApplicationService;
+import com.mt.messenger.application.MessageApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

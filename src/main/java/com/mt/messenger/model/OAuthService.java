@@ -1,7 +1,7 @@
-package com.mt.messenger;
+package com.mt.messenger.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mt.messenger.exception.NoAdminFoundException;
+import com.mt.messenger.model.NoAdminFoundException;
 import com.mt.common.jwt.ResourceServiceTokenHelper;
 import com.mt.common.service_discovery.EurekaRegistryHelper;
 import lombok.extern.slf4j.Slf4j;

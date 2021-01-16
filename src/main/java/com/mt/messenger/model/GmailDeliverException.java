@@ -1,4 +1,4 @@
-package com.mt.messenger.exception;
+package com.mt.messenger.model;
 
 public class GmailDeliverException extends RuntimeException {
     public GmailDeliverException(Throwable cause) {

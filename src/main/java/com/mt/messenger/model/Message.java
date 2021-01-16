@@ -1,6 +1,5 @@
 package com.mt.messenger.model;
 
-import com.mt.messenger.exception.UnknownBizTypeException;
 import com.mt.common.audit.Auditable;
 import lombok.Data;
 

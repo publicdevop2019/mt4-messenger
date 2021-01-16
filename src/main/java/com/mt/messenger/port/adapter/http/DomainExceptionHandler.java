@@ -1,9 +1,9 @@
-package com.mt.messenger;
+package com.mt.messenger.port.adapter.http;
 
-import com.mt.messenger.exception.CoolDownException;
-import com.mt.messenger.exception.GmailDeliverException;
-import com.mt.messenger.exception.NoAdminFoundException;
-import com.mt.messenger.exception.UnknownBizTypeException;
+import com.mt.messenger.model.CoolDownException;
+import com.mt.messenger.model.GmailDeliverException;
+import com.mt.messenger.model.NoAdminFoundException;
+import com.mt.messenger.model.UnknownBizTypeException;
 import com.mt.common.logging.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

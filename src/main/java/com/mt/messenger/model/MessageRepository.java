@@ -1,4 +1,4 @@
-package com.mt.messenger;
+package com.mt.messenger.model;
 
 import com.mt.messenger.model.BizTypeEnum;
 import com.mt.messenger.model.Message;
