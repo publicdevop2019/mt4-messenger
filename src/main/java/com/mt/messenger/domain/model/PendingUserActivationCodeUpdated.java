@@ -1,14 +1,11 @@
-package com.mt.messenger.model;
+package com.mt.messenger.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mt.common.domain_event.DomainEvent;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserPwdResetCodeUpdated {
+public class PendingUserActivationCodeUpdated {
     private String email;
     private String code;
 }

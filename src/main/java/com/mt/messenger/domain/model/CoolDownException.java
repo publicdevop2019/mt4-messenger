@@ -1,4 +1,4 @@
-package com.mt.messenger.model;
+package com.mt.messenger.domain.model;
 
 public class CoolDownException extends RuntimeException {
 }

@@ -1,7 +1,5 @@
-package com.mt.messenger.model;
+package com.mt.messenger.domain.model;
 
-import com.mt.messenger.model.BizTypeEnum;
-import com.mt.messenger.model.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;

@@ -1,9 +1,9 @@
 package com.mt.messenger.port.adapter.http;
 
-import com.mt.messenger.model.CoolDownException;
-import com.mt.messenger.model.GmailDeliverException;
-import com.mt.messenger.model.NoAdminFoundException;
-import com.mt.messenger.model.UnknownBizTypeException;
+import com.mt.messenger.domain.model.CoolDownException;
+import com.mt.messenger.domain.model.GmailDeliverException;
+import com.mt.messenger.domain.model.NoAdminFoundException;
+import com.mt.messenger.domain.model.UnknownBizTypeException;
 import com.mt.common.logging.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -21,7 +21,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @Slf4j
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DomainExceptionHandler extends ResponseEntityExceptionHandler {
+public class DomainHttpExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {
             CoolDownException.class,

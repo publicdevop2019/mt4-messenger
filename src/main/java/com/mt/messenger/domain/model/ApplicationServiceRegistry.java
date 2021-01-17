@@ -1,4 +1,4 @@
-package com.mt.messenger.model;
+package com.mt.messenger.domain.model;
 
 import com.mt.messenger.application.MessageApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;

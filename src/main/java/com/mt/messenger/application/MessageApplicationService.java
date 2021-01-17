@@ -2,7 +2,7 @@ package com.mt.messenger.application;
 
 import com.mt.common.domain.model.CommonDomainRegistry;
 import com.mt.common.domain_event.StoredEvent;
-import com.mt.messenger.model.*;
+import com.mt.messenger.domain.model.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;

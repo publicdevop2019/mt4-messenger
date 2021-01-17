@@ -1,4 +1,4 @@
-package com.mt.messenger.model;
+package com.mt.messenger.domain.model;
 
 import com.mt.common.audit.Auditable;
 import lombok.Data;

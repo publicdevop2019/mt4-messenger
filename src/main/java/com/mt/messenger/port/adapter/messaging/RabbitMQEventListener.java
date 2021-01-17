@@ -1,7 +1,7 @@
 package com.mt.messenger.port.adapter.messaging;
 
 import com.mt.common.domain.model.CommonDomainRegistry;
-import com.mt.messenger.model.ApplicationServiceRegistry;
+import com.mt.messenger.domain.model.ApplicationServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
