@@ -2,7 +2,11 @@ package com.mt.messenger.application;
 
 import com.mt.common.domain.model.CommonDomainRegistry;
 import com.mt.common.domain_event.StoredEvent;
-import com.mt.messenger.domain.model.*;
+import com.mt.messenger.domain.model.email_deliver.*;
+import com.mt.messenger.domain.model.email_deliver.event.PendingUserActivationCodeUpdated;
+import com.mt.messenger.domain.model.email_deliver.event.UserPwdResetCodeUpdated;
+import com.mt.messenger.port.adapter.email.GmailDeliverException;
+import com.mt.messenger.port.adapter.http.OAuthService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -72,12 +76,12 @@ public class MessageApplicationService {
         if (email == null)
             throw new IllegalArgumentException("email should not be empty");
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        Optional<Message> message = transactionTemplate.execute(status -> messageRepository.findByDeliverToAndBizType(email, bizType));
+        Optional<EmailDeliver> message = transactionTemplate.execute(status -> messageRepository.findByDeliverToAndBizType(email, bizType));
         if (message != null && message.isPresent()) {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    Optional<Message> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
+                    Optional<EmailDeliver> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
                     continueDeliverShared(email, byDeliverToAndBizType.get(), templateUrl, subject, model);
                     entityManager.persist(message.get());
                     entityManager.flush();
@@ -89,7 +93,7 @@ public class MessageApplicationService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    Message message = Message.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
+                    EmailDeliver message = EmailDeliver.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
                     log.info("save to db first for concurrency scenario");
                     entityManager.persist(message);
                     entityManager.flush();
@@ -113,7 +117,7 @@ public class MessageApplicationService {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 log.info("after db save, read from db again");
-                Optional<Message> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, bizTypeEnum);
+                Optional<EmailDeliver> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, bizTypeEnum);
                 if (byDeliverTo.isPresent()) {
                     log.info("found previously saved entity");
                     continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
@@ -143,7 +147,7 @@ public class MessageApplicationService {
         }
     }
 
-    private void continueDeliverShared(String email, Message message, String templateUrl, String subject, Map model) {
+    private void continueDeliverShared(String email, EmailDeliver message, String templateUrl, String subject, Map model) {
         log.info("message was sent for {} before", email);
         Boolean aBoolean = message.hasCoolDown();
         if (!aBoolean)
@@ -183,5 +187,9 @@ public class MessageApplicationService {
     private String getShortName(String name) {
         String[] split = name.split("\\.");
         return split[split.length - 1];
+    }
+
+    public void handleMonitorEvent(StoredEvent event) {
+
     }
 }

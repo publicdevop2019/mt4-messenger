@@ -1,6 +1,7 @@
-package com.mt.messenger.domain.model;
+package com.mt.messenger.domain.model.email_deliver;
 
 import com.mt.common.audit.Auditable;
+import com.mt.messenger.application.UnknownBizTypeException;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"deliverTo", "bizType"}))
-public class Message extends Auditable {
+public class EmailDeliver extends Auditable {
     @Id
     private Long id;
 
@@ -29,14 +30,14 @@ public class Message extends Auditable {
     @Version
     private Integer version;
 
-    public Message() {
+    public EmailDeliver() {
     }
 
-    public static Message create(Long id, String deliverTo, BizTypeEnum bizType) {
-        return new Message(id, deliverTo, bizType);
+    public static EmailDeliver create(Long id, String deliverTo, BizTypeEnum bizType) {
+        return new EmailDeliver(id, deliverTo, bizType);
     }
 
-    public Message(Long id, String deliverTo, BizTypeEnum bizType) {
+    public EmailDeliver(Long id, String deliverTo, BizTypeEnum bizType) {
         this.id = id;
         this.deliverTo = deliverTo;
         this.bizType = bizType;

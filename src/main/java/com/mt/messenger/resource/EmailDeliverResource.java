@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping(produces = "application/json")
-public class MessageResource {
+public class EmailDeliverResource {
 
     @Autowired
     private MessageApplicationService messageApplicationService;

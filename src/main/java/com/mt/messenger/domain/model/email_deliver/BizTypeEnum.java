@@ -1,4 +1,4 @@
-package com.mt.messenger.domain.model;
+package com.mt.messenger.domain.model.email_deliver;
 
 public enum BizTypeEnum {
     NEW_ORDER,

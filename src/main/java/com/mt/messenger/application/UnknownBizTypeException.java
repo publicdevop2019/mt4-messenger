@@ -1,4 +1,4 @@
-package com.mt.messenger.domain.model;
+package com.mt.messenger.application;
 
 public class UnknownBizTypeException extends RuntimeException{
 }

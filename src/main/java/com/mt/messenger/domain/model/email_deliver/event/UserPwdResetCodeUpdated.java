@@ -1,4 +1,4 @@
-package com.mt.messenger.domain.model;
+package com.mt.messenger.domain.model.email_deliver.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
