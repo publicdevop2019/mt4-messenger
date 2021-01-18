@@ -1,9 +1,9 @@
 package com.mt.messenger.port.adapter.http;
 
-import com.mt.messenger.domain.model.email_deliver.CoolDownException;
-import com.mt.messenger.port.adapter.email.GmailDeliverException;
-import com.mt.messenger.application.NoAdminFoundException;
-import com.mt.messenger.application.UnknownBizTypeException;
+import com.mt.messenger.domain.model.email_delivery.CoolDownException;
+import com.mt.messenger.port.adapter.email.GmailDeliveryException;
+import com.mt.messenger.application.email_delivery.NoAdminFoundException;
+import com.mt.messenger.application.email_delivery.UnknownBizTypeException;
 import com.mt.common.logging.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -37,7 +37,7 @@ public class HttpExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            GmailDeliverException.class,
+            GmailDeliveryException.class,
     })
     protected ResponseEntity<?> handle500Exception(RuntimeException ex, WebRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(ex);

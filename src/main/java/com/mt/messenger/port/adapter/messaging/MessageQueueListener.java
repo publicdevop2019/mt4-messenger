@@ -12,20 +12,20 @@ import static com.mt.common.idempotent.HangingTxDetected.MONITOR_TOPIC;
 @Slf4j
 @Component
 public class MessageQueueListener {
-    private static final String MESSENGER_USER_QUEUE = "messenger_queue";
-    private static final String MESSENGER_MONITOR_QUEUE = "messenger_queue";
+    private static final String MESSENGER_USER_QUEUE = "messenger_user_queue";
+    private static final String MESSENGER_MONITOR_QUEUE = "messenger_monitor_queue";
 
     @EventListener(ApplicationReadyEvent.class)
     protected void userNotificationListener() {
         CommonDomainRegistry.eventStreamService().subscribe("oauth", false, MESSENGER_USER_QUEUE, (event) -> {
-            ApplicationServiceRegistry.messageApplicationService().handleEvent(event);
+            ApplicationServiceRegistry.emailDeliverApplicationService().handleEvent(event);
         }, "pendingUser", "user");
     }
 
     @EventListener(ApplicationReadyEvent.class)
     protected void systemMonitorListener() {
         CommonDomainRegistry.eventStreamService().subscribe("oauth", false, MESSENGER_MONITOR_QUEUE, (event) -> {
-            ApplicationServiceRegistry.messageApplicationService().handleMonitorEvent(event);
+            ApplicationServiceRegistry.systemNotificationApplicationService().handleMonitorEvent(event);
         }, MONITOR_TOPIC);
     }
 }

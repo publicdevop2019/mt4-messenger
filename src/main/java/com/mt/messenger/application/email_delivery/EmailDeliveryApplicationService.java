@@ -1,11 +1,11 @@
-package com.mt.messenger.application;
+package com.mt.messenger.application.email_delivery;
 
 import com.mt.common.domain.model.CommonDomainRegistry;
 import com.mt.common.domain_event.StoredEvent;
-import com.mt.messenger.domain.model.email_deliver.*;
-import com.mt.messenger.domain.model.email_deliver.event.PendingUserActivationCodeUpdated;
-import com.mt.messenger.domain.model.email_deliver.event.UserPwdResetCodeUpdated;
-import com.mt.messenger.port.adapter.email.GmailDeliverException;
+import com.mt.messenger.domain.model.email_delivery.*;
+import com.mt.messenger.domain.model.email_delivery.event.PendingUserActivationCodeUpdated;
+import com.mt.messenger.domain.model.email_delivery.event.UserPwdResetCodeUpdated;
+import com.mt.messenger.port.adapter.email.GmailDeliveryException;
 import com.mt.messenger.port.adapter.http.OAuthService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -32,7 +32,7 @@ import java.util.*;
 @Service
 @Slf4j
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class MessageApplicationService {
+public class EmailDeliveryApplicationService {
     @Autowired
     private MessageRepository messageRepository;
 
@@ -76,12 +76,12 @@ public class MessageApplicationService {
         if (email == null)
             throw new IllegalArgumentException("email should not be empty");
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        Optional<EmailDeliver> message = transactionTemplate.execute(status -> messageRepository.findByDeliverToAndBizType(email, bizType));
+        Optional<EmailDelivery> message = transactionTemplate.execute(status -> messageRepository.findByDeliverToAndBizType(email, bizType));
         if (message != null && message.isPresent()) {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    Optional<EmailDeliver> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
+                    Optional<EmailDelivery> byDeliverToAndBizType = messageRepository.findByDeliverToAndBizType(email, bizType);
                     continueDeliverShared(email, byDeliverToAndBizType.get(), templateUrl, subject, model);
                     entityManager.persist(message.get());
                     entityManager.flush();
@@ -93,7 +93,7 @@ public class MessageApplicationService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    EmailDeliver message = EmailDeliver.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
+                    EmailDelivery message = EmailDelivery.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
                     log.info("save to db first for concurrency scenario");
                     entityManager.persist(message);
                     entityManager.flush();
@@ -117,7 +117,7 @@ public class MessageApplicationService {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 log.info("after db save, read from db again");
-                Optional<EmailDeliver> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, bizTypeEnum);
+                Optional<EmailDelivery> byDeliverTo = messageRepository.findByDeliverToAndBizType(email, bizTypeEnum);
                 if (byDeliverTo.isPresent()) {
                     log.info("found previously saved entity");
                     continueDeliverShared(email, byDeliverTo.get(), templateUrl, subject, model);
@@ -130,7 +130,7 @@ public class MessageApplicationService {
         });
     }
 
-    private void deliverEmail(String to, String templateUrl, String subject, Map<String, Object> model) throws GmailDeliverException {
+    private void deliverEmail(String to, String templateUrl, String subject, Map<String, Object> model) throws GmailDeliveryException {
         log.info("deliver email");
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -143,11 +143,11 @@ public class MessageApplicationService {
             mimeMessageHelper.setSubject(subject);
             sender.send(mimeMessage);
         } catch (IOException | TemplateException | MessagingException e) {
-            throw new GmailDeliverException(e);
+            throw new GmailDeliveryException(e);
         }
     }
 
-    private void continueDeliverShared(String email, EmailDeliver message, String templateUrl, String subject, Map model) {
+    private void continueDeliverShared(String email, EmailDelivery message, String templateUrl, String subject, Map model) {
         log.info("message was sent for {} before", email);
         Boolean aBoolean = message.hasCoolDown();
         if (!aBoolean)
@@ -187,9 +187,5 @@ public class MessageApplicationService {
     private String getShortName(String name) {
         String[] split = name.split("\\.");
         return split[split.length - 1];
-    }
-
-    public void handleMonitorEvent(StoredEvent event) {
-
     }
 }
