@@ -4,7 +4,6 @@ import com.mt.messenger.domain.model.system_notification.SystemNotification;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 @NoArgsConstructor
 @Getter
 public class SystemNotificationRepresentation {
