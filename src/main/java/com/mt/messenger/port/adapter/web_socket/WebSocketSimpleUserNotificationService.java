@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-//@Component
-public class WebSocketUserNotificationService implements UserNotificationService {
+@Component
+public class WebSocketSimpleUserNotificationService implements UserNotificationService {
     @Autowired
-    private SimpMessagingTemplate template;
+    SpringBootSimpleWebSocketConfig.SocketTextHandler socketTextHandler;
     @Override
     public void notify(String message) {
-        template.convertAndSend("notify", message);
+        socketTextHandler.broadcast(message);
     }
 }

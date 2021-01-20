@@ -7,7 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
-@Controller
+//@Controller
 public class MessageController {
     @Autowired
     private SimpMessagingTemplate template;

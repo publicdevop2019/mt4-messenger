@@ -2,14 +2,11 @@ package com.mt.messenger.port.adapter.web_socket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
@@ -18,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Map;
 
-@Configuration
-@EnableWebSocketMessageBroker
+//@Configuration
+//@EnableWebSocketMessageBroker
 public class SpringBootWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private PrincipalHandshakeHandler principalHandshakeHandler;
@@ -29,7 +26,8 @@ public class SpringBootWebSocketConfig implements WebSocketMessageBrokerConfigur
         registry.addEndpoint("/web-socket")
                 .setAllowedOrigins("*")
                 .setHandshakeHandler(principalHandshakeHandler)
-                .withSockJS();
+                .withSockJS()
+        ;
     }
 
     @Slf4j
