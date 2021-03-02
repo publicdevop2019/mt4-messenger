@@ -1,7 +1,7 @@
 package com.mt.messenger.domain.model.system_notification;
 
-import com.mt.common.audit.Auditable;
-import com.mt.common.idempotent.HangingTxDetected;
+import com.mt.common.domain.model.audit.Auditable;
+import com.mt.common.domain.model.idempotent.event.HangingTxDetected;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,8 +17,6 @@ import javax.persistence.Version;
 public class SystemNotification extends Auditable {
     @Id
     private Long id;
-    @Version
-    private Integer version;
     private SystemNotificationId systemNotificationId;
     private Long timestamp;
     private String details;

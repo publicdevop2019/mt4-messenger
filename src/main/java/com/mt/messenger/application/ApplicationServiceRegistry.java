@@ -1,19 +1,33 @@
 package com.mt.messenger.application;
 
-import com.mt.common.idempotent.ApplicationServiceIdempotentWrapper;
+import com.mt.common.domain.model.idempotent.IdempotentService;
 import com.mt.messenger.application.email_delivery.EmailDeliveryApplicationService;
+import com.mt.messenger.application.mall_notification.MallNotificationApplicationService;
 import com.mt.messenger.application.system_notification.SystemNotificationApplicationService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ApplicationServiceRegistry {
+
+    @Getter
     private static EmailDeliveryApplicationService emailDeliverApplicationService;
+    @Getter
     private static SystemNotificationApplicationService systemNotificationApplicationService;
-    private static ApplicationServiceIdempotentWrapper applicationServiceIdempotentWrapper;
+    @Getter
+    private static MallNotificationApplicationService mallNotificationApplicationService;
+    @Getter
+    private static IdempotentService idempotentService;
+
     @Autowired
     public void setEmailDeliverApplicationService(EmailDeliveryApplicationService emailDeliverApplicationService) {
         ApplicationServiceRegistry.emailDeliverApplicationService = emailDeliverApplicationService;
+    }
+
+    @Autowired
+    public void setMallNotificationApplicationService(MallNotificationApplicationService mallNotificationApplicationService) {
+        ApplicationServiceRegistry.mallNotificationApplicationService = mallNotificationApplicationService;
     }
 
     @Autowired
@@ -22,19 +36,7 @@ public class ApplicationServiceRegistry {
     }
 
     @Autowired
-    public void setClientIdempotentApplicationService(ApplicationServiceIdempotentWrapper clientIdempotentApplicationService) {
-        ApplicationServiceRegistry.applicationServiceIdempotentWrapper = clientIdempotentApplicationService;
-    }
-
-    public static SystemNotificationApplicationService systemNotificationApplicationService() {
-        return systemNotificationApplicationService;
-    }
-
-
-    public static EmailDeliveryApplicationService emailDeliverApplicationService() {
-        return emailDeliverApplicationService;
-    }
-    public static ApplicationServiceIdempotentWrapper idempotentWrapper() {
-        return applicationServiceIdempotentWrapper;
+    public void setClientIdempotentApplicationService(IdempotentService clientIdempotentApplicationService) {
+        ApplicationServiceRegistry.idempotentService = clientIdempotentApplicationService;
     }
 }

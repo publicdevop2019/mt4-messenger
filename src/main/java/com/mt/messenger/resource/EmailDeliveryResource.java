@@ -14,7 +14,7 @@ public class EmailDeliveryResource {
 
     @PostMapping("notifyBy/email/newOrder")
     public ResponseEntity<?> sendOrderInfoToAccount() {
-        ApplicationServiceRegistry.emailDeliverApplicationService().sendNewOrderEmail();
+        ApplicationServiceRegistry.getEmailDeliverApplicationService().sendNewOrderEmail();
         return ResponseEntity.ok().build();
     }
 }

@@ -1,17 +1,17 @@
-package com.mt.messenger.domain.model.system_notification;
+package com.mt.messenger.domain.model.mall_notification;
 
 import com.mt.common.domain.CommonDomainRegistry;
 import com.mt.common.domain.model.domainId.DomainId;
 
-public class SystemNotificationId extends DomainId {
-    public SystemNotificationId() {
+public class MallNotificationId extends DomainId {
+    public MallNotificationId() {
         super();
         Long id = CommonDomainRegistry.getUniqueIdGeneratorService().id();
         String s = Long.toString(id, 36);
-        setDomainId("4S" + s.toUpperCase());
+        setDomainId("4M" + s.toUpperCase());
     }
 
-    public SystemNotificationId(String domainId) {
+    public MallNotificationId(String domainId) {
         super(domainId);
     }
 }

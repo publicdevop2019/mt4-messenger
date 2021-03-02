@@ -4,7 +4,7 @@ import com.mt.messenger.domain.model.email_delivery.CoolDownException;
 import com.mt.messenger.port.adapter.email.GmailDeliveryException;
 import com.mt.messenger.application.email_delivery.NoAdminFoundException;
 import com.mt.messenger.application.email_delivery.UnknownBizTypeException;
-import com.mt.common.logging.ErrorMessage;
+import com.mt.common.domain.model.logging.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

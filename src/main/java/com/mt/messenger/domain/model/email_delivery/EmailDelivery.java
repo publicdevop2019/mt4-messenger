@@ -1,8 +1,9 @@
 package com.mt.messenger.domain.model.email_delivery;
 
-import com.mt.common.audit.Auditable;
+import com.mt.common.domain.model.audit.Auditable;
 import com.mt.messenger.application.email_delivery.UnknownBizTypeException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"deliverTo", "bizType"}))
+@NoArgsConstructor
 public class EmailDelivery extends Auditable {
     @Id
     private Long id;
@@ -26,12 +28,6 @@ public class EmailDelivery extends Auditable {
 
     @Column
     private Date lastSuccessTime;
-
-    @Version
-    private Integer version;
-
-    public EmailDelivery() {
-    }
 
     public static EmailDelivery create(Long id, String deliverTo, BizTypeEnum bizType) {
         return new EmailDelivery(id, deliverTo, bizType);

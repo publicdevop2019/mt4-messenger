@@ -1,7 +1,7 @@
 package com.mt.messenger.application.email_delivery;
 
-import com.mt.common.domain.model.CommonDomainRegistry;
-import com.mt.common.domain_event.StoredEvent;
+import com.mt.common.domain.CommonDomainRegistry;
+import com.mt.common.domain.model.domain_event.StoredEvent;
 import com.mt.messenger.domain.model.email_delivery.*;
 import com.mt.messenger.domain.model.email_delivery.event.PendingUserActivationCodeUpdated;
 import com.mt.messenger.domain.model.email_delivery.event.UserPwdResetCodeUpdated;
@@ -93,7 +93,7 @@ public class EmailDeliveryApplicationService {
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    EmailDelivery message = EmailDelivery.create(CommonDomainRegistry.uniqueIdGeneratorService().id(), email, bizType);
+                    EmailDelivery message = EmailDelivery.create(CommonDomainRegistry.getUniqueIdGeneratorService().id(), email, bizType);
                     log.info("save to db first for concurrency scenario");
                     entityManager.persist(message);
                     entityManager.flush();
@@ -168,14 +168,14 @@ public class EmailDeliveryApplicationService {
     public void handleEvent(StoredEvent o) {
 
         if (getShortName(PendingUserActivationCodeUpdated.class.getName()).equals(getShortName(o.getName()))) {
-            PendingUserActivationCodeUpdated o1 = CommonDomainRegistry.customObjectSerializer().deserialize(o.getEventBody(), PendingUserActivationCodeUpdated.class);
+            PendingUserActivationCodeUpdated o1 = CommonDomainRegistry.getCustomObjectSerializer().deserialize(o.getEventBody(), PendingUserActivationCodeUpdated.class);
             HashMap<String, String> stringStringHashMap = new HashMap<>();
             stringStringHashMap.put("email", o1.getEmail());
             stringStringHashMap.put("activationCode", o1.getCode());
             sendActivationCodeEmail(stringStringHashMap);
             log.debug("deliver activation code email successfully");
         } else if (getShortName(UserPwdResetCodeUpdated.class.getName()).equals(getShortName(o.getName()))) {
-            UserPwdResetCodeUpdated o1 = CommonDomainRegistry.customObjectSerializer().deserialize(o.getEventBody(), UserPwdResetCodeUpdated.class);
+            UserPwdResetCodeUpdated o1 = CommonDomainRegistry.getCustomObjectSerializer().deserialize(o.getEventBody(), UserPwdResetCodeUpdated.class);
             HashMap<String, String> stringStringHashMap = new HashMap<>();
             stringStringHashMap.put("email", o1.getEmail());
             stringStringHashMap.put("token", o1.getCode());

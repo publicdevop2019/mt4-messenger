@@ -1,8 +1,8 @@
 package com.mt.messenger.port.adapter.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mt.common.jwt.ResourceServiceTokenHelper;
-import com.mt.common.service_discovery.EurekaRegistryHelper;
+import com.mt.common.domain.model.jwt.ResourceServiceTokenHelper;
+import com.mt.common.domain.model.service_discovery.EurekaRegistryHelper;
 import com.mt.messenger.application.email_delivery.NoAdminFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
