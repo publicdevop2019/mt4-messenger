@@ -3,13 +3,13 @@ package com.mt.messenger.application.mall_notification;
 import com.mt.common.domain.CommonDomainRegistry;
 import com.mt.common.domain.model.domain_event.StoredEvent;
 import com.mt.common.domain.model.domain_event.SubscribeForEvent;
-import com.mt.common.domain.model.idempotent.event.HangingTxDetected;
 import com.mt.common.domain.model.idempotent.event.SkuChangeFailed;
 import com.mt.common.domain.model.restful.SumPagedRep;
 import com.mt.common.domain.model.restful.query.PageConfig;
 import com.mt.common.domain.model.restful.query.QueryConfig;
 import com.mt.messenger.application.ApplicationServiceRegistry;
 import com.mt.messenger.domain.DomainRegistry;
+import com.mt.messenger.domain.model.mall_notification.MallNotification;
 import com.mt.messenger.domain.model.system_notification.SystemNotification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class MallNotificationApplicationService {
         }, SystemNotification.class);
     }
 
-    public SumPagedRep<SystemNotification> notificationsOf(String pageParam, String skipCount) {
-        return DomainRegistry.getSystemNotificationRepository().latestSystemNotifications(new PageConfig(pageParam, 200), new QueryConfig(skipCount));
+    public SumPagedRep<MallNotification> notificationsOf(String pageParam, String skipCount) {
+        return DomainRegistry.getMallNotificationRepository().latestMallNotifications(new PageConfig(pageParam, 200), new QueryConfig(skipCount));
     }
 }
