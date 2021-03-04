@@ -11,7 +11,7 @@ public class SystemNotificationService {
     public SystemNotificationId create(HangingTxDetected deserialize) {
         SystemNotification systemNotification = new SystemNotification(deserialize);
         DomainRegistry.getSystemNotificationRepository().add(systemNotification);
-        DomainRegistry.getUserNotificationService().notify(systemNotification.getDetails());
+        DomainRegistry.getSystemMonitorNotificationService().notify(systemNotification.getDetails());
         return systemNotification.getSystemNotificationId();
     }
 }

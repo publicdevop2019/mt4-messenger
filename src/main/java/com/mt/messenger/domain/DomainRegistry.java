@@ -2,9 +2,10 @@ package com.mt.messenger.domain;
 
 import com.mt.messenger.domain.model.mall_notification.MallNotificationRepository;
 import com.mt.messenger.domain.model.system_notification.SystemNotificationRepository;
+import com.mt.messenger.domain.service.MallMonitorNotificationService;
 import com.mt.messenger.domain.service.MallNotificationService;
+import com.mt.messenger.domain.service.SystemMonitorNotificationService;
 import com.mt.messenger.domain.service.SystemNotificationService;
-import com.mt.messenger.domain.service.UserNotificationService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DomainRegistry {
     @Getter
-    private static UserNotificationService userNotificationService;
+    private static SystemMonitorNotificationService systemMonitorNotificationService;
+    @Getter
+    private static MallMonitorNotificationService mallMonitorNotificationService;
     @Getter
     private static SystemNotificationService systemNotificationService;
     @Getter
@@ -28,13 +31,18 @@ public class DomainRegistry {
     }
 
     @Autowired
+    public void setMallMonitorNotificationService(MallMonitorNotificationService mallMonitorNotificationService) {
+        DomainRegistry.mallMonitorNotificationService = mallMonitorNotificationService;
+    }
+
+    @Autowired
     public void setMallNotificationService(MallNotificationService mallNotificationService) {
         DomainRegistry.mallNotificationService = mallNotificationService;
     }
 
     @Autowired
-    public void setUserNotificationService(UserNotificationService userNotificationService) {
-        DomainRegistry.userNotificationService = userNotificationService;
+    public void setSystemMonitorNotificationService(SystemMonitorNotificationService userNotificationService) {
+        DomainRegistry.systemMonitorNotificationService = userNotificationService;
     }
 
     @Autowired

@@ -13,7 +13,7 @@ public class MallNotificationService {
     public MallNotificationId create(SkuChangeFailed deserialize) {
         MallNotification mallNotification = new MallNotification(deserialize);
         DomainRegistry.getMallNotificationRepository().add(mallNotification);
-        DomainRegistry.getUserNotificationService().notify(CommonDomainRegistry.getCustomObjectSerializer().serialize(new MallNotificationRepresentation(mallNotification)));
+        DomainRegistry.getMallMonitorNotificationService().notify(CommonDomainRegistry.getCustomObjectSerializer().serialize(new MallNotificationRepresentation(mallNotification)));
         return mallNotification.getMallNotificationId();
     }
 }

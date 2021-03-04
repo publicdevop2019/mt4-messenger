@@ -1,5 +1,5 @@
 package com.mt.messenger.domain.service;
 
-public interface UserNotificationService {
+public interface MallMonitorNotificationService {
     void notify(String message);
 }
